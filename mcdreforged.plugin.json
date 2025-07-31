@@ -1,0 +1,16 @@
+{
+    "id": "pp_plugin",
+    "version": "1.0.0",
+    "name": "PerimeterProducer Plugin",
+    "description": "This plugin is designed to generate a perimeter faster and efficiently",
+    "author": [
+        "WalkerTian"
+    ],
+    "link": "https://github.com/Walkersifolia/PerimeterProducer",
+    "dependencies": {
+    },
+
+    "resources": [
+        "lang"
+    ]
+}
