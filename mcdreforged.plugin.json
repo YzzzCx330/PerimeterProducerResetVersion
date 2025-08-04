@@ -1,12 +1,12 @@
 {
-    "id": "pp_plugin",
+    "id": "ppr_plugin",
     "version": "1.0.0",
-    "name": "PerimeterProducer Plugin",
+    "name": "PerimeterProducer Plugin Reset",
     "description": "This plugin is designed to generate a perimeter faster and efficiently",
     "author": [
-        "WalkerTian"
+        "YzzzCx330"
     ],
-    "link": "https://github.com/Walkersifolia/PerimeterProducer",
+    "link": "https://github.com/YzzzCx330/PerimeterProducerResetVersion",
     "dependencies": {
     },
 
