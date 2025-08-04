@@ -15,6 +15,10 @@ PLUGIN_METADATA = {
 	}
 }
 
+class PlayerPos(TypedDict):
+    positon: Tuple[int, int, int]
+    dimension: str
+
 DELAY = 0.2
 Prefix = "!!pp"
 CHUNK = 16
@@ -32,11 +36,27 @@ p4 = None
 
 def start_timer(server):
     global NEED_COMMIT, ABORT, WORKING
-    time.sleep(30)
-    if NEED_COMMIT and not WORKING:
+    time.sleep(20)
+    if NEED_COMMIT and not WORKING and TIMER:
         NEED_COMMIT = False
         ABORT = True
-        server.say("§c30秒内未确认，操作自动取消")
+        server.say("§c20秒内未确认，操作自动取消")
+        TIMER = False
+
+@new_thread(f"{PLUGIN_ID}-player_pos")
+def player_pos(self, source: CommandSource, context: CommandContext, player: str):
+    player_list = [re.fullmatch(f"{self.config.prefix_regex}(.+)", i).groups()[-1] for i in get_server_player_list()[2]]
+    server = source.get_server()
+    if player not in player_list:
+        server.say(rtr("command.player_pos.nodata"))
+    pos = get_player_coordinate(player)
+    dimension = get_player_dimension(player)
+    player_pos = {
+        "position": (int(pos.x), int(pos.y), int(pos.z)),
+        "dimension": dimension
+    }
+    if not player_pos:
+        return
 
 def on_info(server, info):
     global Prefix, DELAY
@@ -60,7 +80,8 @@ def on_info(server, info):
         return
     # !!perimeter abort <length> <width>
     if len(cmd) == 2 and cmd[0] == "make":
-        pos = get_player_coordinate(player)
+        player_pos()
+        pos = player_pos.position
         if len(pos) != 3:
             server.say(info, "§c在线玩家才能使用该指令！")
             return
@@ -110,7 +131,7 @@ def on_info(server, info):
                 server.reply(info, "§c终止操作！")
                 break
             y = 311 - i
-            dimension = get_player_dimension(player)
+            dimension = player_pos.dimension
             command = "execute at {} run fill {} {} {} {} {} {} air".format(dimension, p1, y, p3, p2, y, p4)
             server.say("正在替换第{}层".format(y))
             server.execute(command)
