@@ -8,7 +8,7 @@ PLUGIN_METADATA = {
     'id': 'ppr',
     'version': '1.0.0',
     'name': 'PerimeterProducerReset',
-    'description': 'This plugin is a rewrite of WalkerTian's PerimeterProducer plugin, which allows you to quickly and easily create a vacant domain',
+    'description': 'This plugin is a rewrite of WalkerTian PerimeterProducer plugin, which allows you to quickly and easily create a vacant domain',
     'author': 'YzzzCx330',
     'link': 'https://github.com/YzzzCx330/PerimeterProducerResetVersion',
     'dependencies': {
