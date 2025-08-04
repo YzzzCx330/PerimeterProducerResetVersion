@@ -2,6 +2,7 @@ from mcdreforged.api.all import *
 from minecraft_data_api import get_player_coordinate, get_player_dimension, get_server_player_list
 import time
 import math
+import re
 
 PLUGIN_METADATA = {
     'id': 'pp',
@@ -44,11 +45,7 @@ def start_timer(server):
         TIMER = False
 
 @new_thread(f"{PLUGIN_ID}-player_pos")
-def player_pos(self, source: CommandSource, context: CommandContext, player: str):
-    player_list = [re.fullmatch(f"{self.config.prefix_regex}(.+)", i).groups()[-1] for i in get_server_player_list()[2]]
-    server = source.get_server()
-    if player not in player_list:
-        server.say(rtr("command.player_pos.nodata"))
+def get_player_pos(player: str, timeout: int = 5) -> dict:
     pos = get_player_coordinate(player)
     dimension = get_player_dimension(player)
     player_pos = {
@@ -80,8 +77,9 @@ def on_info(server, info):
         return
     # !!perimeter abort <length> <width>
     if len(cmd) == 2 and cmd[0] == "make":
-        player_pos()
-        pos = player_pos.position
+        player = info.player
+        result = player_pos(player)
+        pos = result.position
         if len(pos) != 3:
             server.say(info, "§c在线玩家才能使用该指令！")
             return
@@ -106,11 +104,12 @@ def on_info(server, info):
         NEED_COMMIT = True
         TIMER = True
         server.reply(info, "§a请输入§6{} commit§a确认操作！".format(Prefix))
-        
+
         if TIMER_THREAD is None or not TIMER_THREAD.is_alive():
             TIMER_THREAD = threading.Thread(target=start_timer, args=(server,))
             TIMER_THREAD.start()
         return
+
     if len(cmd) == 1 and cmd[0] == "commit":
 
         if not NEED_COMMIT:
@@ -119,6 +118,7 @@ def on_info(server, info):
 
         server.say("§a开始操作！")
         NEED_COMMIT = False
+        TIMER = False
 
         server.execute("carpet fillLimit 2000000")
         server.execute("carpet fillUpdates false")
@@ -131,7 +131,7 @@ def on_info(server, info):
                 server.reply(info, "§c终止操作！")
                 break
             y = 311 - i
-            dimension = player_pos.dimension
+            dimension = result.dimension
             command = "execute at {} run fill {} {} {} {} {} {} air".format(dimension, p1, y, p3, p2, y, p4)
             server.say("正在替换第{}层".format(y))
             server.execute(command)
